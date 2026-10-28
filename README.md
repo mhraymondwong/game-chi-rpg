@@ -1,19 +1,31 @@
-# 青石渡 · 阿衡 (game-chi-rpg)
+# 青石渡 · 阿衡
 
-Isometric Chinese wuxia RPG prototype built with Godot 4.7.
+Qingshi Ferry — isometric Chinese wuxia RPG MVP (Godot 4.7)
 
-## Play online (GitHub Pages)
+## 短設定
+
+青石渡是凡間與求道路的交界渡口。守渡人表面擺渡垂釣，實則考驗過江者。外門弟子阿衡體內有一段未醒的靈脈印記；盤踞水車棧道的碧鱗河妖受地脈濁氣所侵，堵住靈泉與渡口。唯有通過對話考驗、降伏河妖，渡舟才會為你靠岸。
+
+- **地名**：青石渡＝凡間市井與求道路交界；象徵「過得了心，才過得了江」
+- **主角**：阿衡，劍宗外門弟子；體內未醒靈脈印記
+- **師傅畫面稱謂**：守渡人
+- **關卡怪**：碧鱗河妖，護著被濁氣堵住的靈泉
+- **可玩規則**：通過對話考驗 ＋ 打贏河妖 → 渡舟靠岸
+
+## 線上玩（GitHub Pages）
 
 https://mhraymondwong.github.io/game-chi-rpg/
 
-Click the ground to move, talk to 顧聞舟 (green glow), then fight the river beast.
+## 操作
 
-## Run locally (Godot)
+- 點地面移動
+- 點綠光與守渡人對話（解鎖戰鬥）
+- 點碧鱗河妖開戰（攻擊／逃跑）
+
+## 本機執行
 
 ```bash
 godot --path godot
 ```
 
-## Web export
-
-The repository root hosts the Godot HTML5 export (no threads) for GitHub Pages.
+需要 Godot 4.7。源碼在 `godot/`。倉庫根目錄為 HTML5 匯出（no-threads），供 GitHub Pages 使用。

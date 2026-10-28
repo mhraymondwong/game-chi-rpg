@@ -1,3 +1,3 @@
 .godot/
-*.import.bak
+*.tmp
 .DS_Store

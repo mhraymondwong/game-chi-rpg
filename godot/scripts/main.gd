@@ -18,6 +18,11 @@ var player_hp := PLAYER_MAX_HP
 var monster_hp := MONSTER_MAX_HP
 var monster_defeated := false
 
+# Dialogue / intro
+var dialogue_lines: Array[String] = []
+var dialogue_index := 0
+var dialogue_kind := ""  # "intro" | "master"
+
 var hero_target := Vector2(420, 480)
 var hero_pos := Vector2(420, 480)
 var monster_pos := Vector2(920, 420)
@@ -83,11 +88,12 @@ func _ready() -> void:
 	_build_npc_marker()
 
 	print("READY")
-	print("青石渡 prototype ready — click ground to move, talk to 顧聞舟, then fight.")
+	print("青石渡 prototype ready — intro, talk to 守渡人, then fight 碧鱗河妖.")
+	_open_intro()
 
 
 func _build_npc_marker() -> void:
-	# Soft glow marker near pavilion for talking to master
+	# Soft glow marker near pavilion for talking to 守渡人
 	npc_marker = ColorRect.new()
 	npc_marker.size = Vector2(36, 36)
 	npc_marker.position = npc_pos - Vector2(18, 18)
@@ -149,7 +155,7 @@ func _build_hud() -> void:
 	hint_label.size = Vector2(VIEW_W - 32, 28)
 	hint_label.add_theme_font_size_override("font_size", 15)
 	hint_label.add_theme_color_override("font_color", Color(0.9, 0.95, 0.85, 0.95))
-	hint_label.text = "點擊地面移動 · 點綠光與師傅對話 · 解鎖後點擊河妖開戰"
+	hint_label.text = "點擊地面移動 · 點綠光與守渡人對話 · 解鎖後點擊碧鱗河妖開戰"
 	layer.add_child(hint_label)
 
 	_refresh_hud()
@@ -191,16 +197,16 @@ func _build_dialogue() -> void:
 	dialogue_layer.move_child(frame, dialogue_portrait.get_index())
 
 	dialogue_name = Label.new()
-	dialogue_name.text = "顧聞舟"
+	dialogue_name.text = "旁白"
 	dialogue_name.position = Vector2(330, 478)
 	dialogue_name.add_theme_font_size_override("font_size", 24)
 	dialogue_name.add_theme_color_override("font_color", Color(0.55, 0.95, 0.7))
 	dialogue_layer.add_child(dialogue_name)
 
 	dialogue_body = Label.new()
-	dialogue_body.text = "阿衡，先別收劍。幫我扶一下桌子。"
+	dialogue_body.text = ""
 	dialogue_body.position = Vector2(330, 520)
-	dialogue_body.size = Vector2(620, 80)
+	dialogue_body.size = Vector2(760, 110)
 	dialogue_body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	dialogue_body.add_theme_font_size_override("font_size", 20)
 	dialogue_body.add_theme_color_override("font_color", Color(0.95, 0.98, 0.92))
@@ -228,7 +234,7 @@ func _build_combat() -> void:
 	combat_layer.add_child(dim)
 
 	combat_title = Label.new()
-	combat_title.text = "戰鬥 · 青石渡河妖"
+	combat_title.text = "戰鬥 · 碧鱗河妖"
 	combat_title.position = Vector2(0, 24)
 	combat_title.size = Vector2(VIEW_W, 40)
 	combat_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -268,7 +274,7 @@ func _build_combat() -> void:
 	combat_layer.add_child(player_combat_hp)
 
 	var m_label := Label.new()
-	m_label.text = "河妖"
+	m_label.text = "碧鱗河妖"
 	m_label.position = Vector2(820, 500)
 	m_label.add_theme_font_size_override("font_size", 18)
 	m_label.add_theme_color_override("font_color", Color(0.95, 0.8, 0.75))
@@ -289,7 +295,7 @@ func _build_combat() -> void:
 	combat_layer.add_child(combat_panel)
 
 	combat_log = Label.new()
-	combat_log.text = "河妖擋路。選擇行動。"
+	combat_log.text = "碧鱗河妖護著濁氣堵住的靈泉，擋路。選擇行動。"
 	combat_log.position = Vector2(360, 592)
 	combat_log.size = Vector2(560, 30)
 	combat_log.add_theme_font_size_override("font_size", 16)
@@ -341,7 +347,7 @@ func _build_win() -> void:
 	win_layer.add_child(title)
 
 	var body := Label.new()
-	body.text = "河妖退入水中。青石渡暫得安寧。\n顧聞舟點頭：「阿衡，做得不錯。」"
+	body.text = "碧鱗河妖退入水中，靈泉濁氣稍解。渡舟緩緩靠岸。\n守渡人點頭：「阿衡，心與氣都通了一寸。做得不錯。」"
 	body.position = Vector2(380, 320)
 	body.size = Vector2(520, 80)
 	body.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -426,8 +432,8 @@ func _draw() -> void:
 		draw_circle(npc_pos, 22.0, Color(0.35, 0.9, 0.55, pulse))
 		draw_circle(npc_pos, 10.0, Color(0.7, 1.0, 0.8, 0.85))
 		# Small label shadow
-		draw_string(ThemeDB.fallback_font, npc_pos + Vector2(-28, -28), "顧聞舟", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color(0.1, 0.2, 0.15, 0.8))
-		draw_string(ThemeDB.fallback_font, npc_pos + Vector2(-29, -29), "顧聞舟", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color(0.75, 1.0, 0.85))
+		draw_string(ThemeDB.fallback_font, npc_pos + Vector2(-28, -28), "守渡人", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color(0.1, 0.2, 0.15, 0.8))
+		draw_string(ThemeDB.fallback_font, npc_pos + Vector2(-29, -29), "守渡人", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color(0.75, 1.0, 0.85))
 
 	# Y-sort: draw farther (smaller y) first
 	var entities: Array = []
@@ -484,19 +490,61 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
-func _open_dialogue() -> void:
+func _open_intro() -> void:
+	dialogue_kind = "intro"
+	dialogue_lines = [
+		"青石渡：過得了心，才過得了江。",
+		"青石渡是凡間與求道路的交界渡口。守渡人表面擺渡垂釣，實則考驗過江者。",
+		"外門弟子阿衡體內有一段未醒的靈脈印記；盤踞水車棧道的碧鱗河妖受地脈濁氣所侵，堵住靈泉與渡口。",
+		"唯有通過對話考驗、降伏河妖，渡舟才會為你靠岸。點綠光，先去見守渡人。",
+	]
+	dialogue_index = 0
 	mode = Mode.DIALOGUE
+	dialogue_name.text = "旁白"
+	_show_dialogue_line()
 	dialogue_layer.visible = true
 	_play(sfx_dialogue)
-	hint_label.text = "聆聽顧聞舟……"
+	hint_label.text = "聆聽開場……"
+
+
+func _open_dialogue() -> void:
+	dialogue_kind = "master"
+	dialogue_lines = [
+		"少年，你是劍宗外門的阿衡？我在這渡口擺渡多年——過江的人不少，過得了心的卻不多。",
+		"水車棧道旁那頭碧鱗河妖，護著被濁氣堵住的靈泉，阻了去路。你若心境未澄、氣血未通，渡舟不會為你靠岸。",
+		"這便是我給你的考驗：聽完這些，再去降伏牠。通過對話、降伏河妖，渡舟才會靠岸。",
+	]
+	dialogue_index = 0
+	mode = Mode.DIALOGUE
+	dialogue_name.text = "守渡人"
+	_show_dialogue_line()
+	dialogue_layer.visible = true
+	_play(sfx_dialogue)
+	hint_label.text = "聆聽守渡人……"
+
+
+func _show_dialogue_line() -> void:
+	if dialogue_index < dialogue_lines.size():
+		dialogue_body.text = dialogue_lines[dialogue_index]
+		if dialogue_index >= dialogue_lines.size() - 1:
+			btn_continue.text = "明白" if dialogue_kind == "intro" else "受考驗"
+		else:
+			btn_continue.text = "繼續"
 
 
 func _on_dialogue_continue() -> void:
 	_play(sfx_click)
+	dialogue_index += 1
+	if dialogue_index < dialogue_lines.size():
+		_show_dialogue_line()
+		return
 	dialogue_layer.visible = false
-	combat_unlocked = true
 	mode = Mode.EXPLORE
-	hint_label.text = "戰鬥已解鎖 · 點擊河妖開戰 · 點擊地面移動"
+	if dialogue_kind == "master":
+		combat_unlocked = true
+		hint_label.text = "考驗通過 · 點擊碧鱗河妖開戰 · 點擊地面移動"
+	else:
+		hint_label.text = "點擊地面移動 · 點綠光與守渡人對話 · 通過考驗後點碧鱗河妖開戰"
 	queue_redraw()
 
 
@@ -507,7 +555,7 @@ func _start_combat() -> void:
 		monster_hp = MONSTER_MAX_HP
 	player_combat_hp.value = player_hp
 	monster_combat_hp.value = monster_hp
-	combat_log.text = "河妖擋路。選擇行動。"
+	combat_log.text = "碧鱗河妖護著濁氣堵住的靈泉，擋路。選擇行動。"
 	btn_attack.disabled = false
 	btn_flee.disabled = false
 	combat_layer.visible = true
@@ -534,14 +582,14 @@ func _on_attack() -> void:
 	player_hp = max(1, player_hp - MONSTER_ATK)  # keep at least 1 for MVP
 	player_combat_hp.value = player_hp
 	_refresh_hud()
-	combat_log.text = "河妖反撲，你受到 %d 傷害。" % MONSTER_ATK
+	combat_log.text = "碧鱗河妖反撲，你受到 %d 傷害。" % MONSTER_ATK
 
 
 func _on_flee() -> void:
 	_play(sfx_click)
 	combat_layer.visible = false
 	mode = Mode.EXPLORE
-	hint_label.text = "你退回岸邊。點擊河妖可再戰。"
+	hint_label.text = "你退回岸邊。點擊碧鱗河妖可再戰。"
 
 
 func _win_combat() -> void:
@@ -550,7 +598,7 @@ func _win_combat() -> void:
 	mode = Mode.WIN
 	win_layer.visible = true
 	_play(sfx_win)
-	hint_label.text = "勝利！青石渡暫得安寧。"
+	hint_label.text = "勝利！靈泉稍清，渡舟靠岸。"
 	queue_redraw()
 
 
@@ -558,7 +606,7 @@ func _on_win_ok() -> void:
 	_play(sfx_click)
 	win_layer.visible = false
 	mode = Mode.EXPLORE
-	hint_label.text = "河妖已退。可再與顧聞舟對話，或在渡口走動。"
+	hint_label.text = "碧鱗河妖已退，渡舟已靠岸。可再與守渡人對話，或在渡口走動。"
 	# Soft heal after win
 	player_hp = mini(PLAYER_MAX_HP, player_hp + 20)
 	_refresh_hud()
